@@ -15,15 +15,15 @@ int main() {
 
     f = fopen("input.txt", "r");
     increases = 0;
-    unsigned int last_last_last_num, last_last_num;
-    fscanf(f, "%u", &last_last_last_num);
+    unsigned int last_sum, last_last_num;
+    fscanf(f, "%u", &last_sum);
     fscanf(f, "%u", &last_last_num);
     fscanf(f, "%u", &last_num);
+    last_sum += last_last_num + last_num;
     while (fscanf(f, "%u", &next) == 1) {
-        unsigned last_sum = last_last_last_num + last_last_num + last_num;
         unsigned next_sum = last_last_num + last_num + next;
         if (next_sum > last_sum) increases++;
-        last_last_last_num = last_last_num;
+        last_sum = next_sum;
         last_last_num = last_num;
         last_num = next;
     }
