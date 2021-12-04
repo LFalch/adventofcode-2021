@@ -1,0 +1,1 @@
+./a.out | tail -n 2

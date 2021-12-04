@@ -1,0 +1,1 @@
+./a.out | head -n 2
