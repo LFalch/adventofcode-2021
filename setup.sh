@@ -3,16 +3,22 @@
 day=$1
 dayf=day$(printf "%02d\n" $day)
 
-mkdir $dayf
 
-echo "#include <stdio.h>" > $dayf/main.c
-echo "#include <stdlib.h>" >> $dayf/main.c
-echo "#include <sys/types.h>" >> $dayf/main.c
-echo "#define _GNU_SOURCE 1" >> $dayf/main.c
-echo "" >> $dayf/main.c
-echo "int main() {" >> $dayf/main.c
-echo "    FILE *f = fopen(\"input.txt\", \"r\");" >> $dayf/main.c
-echo "}" >> $dayf/main.c
+main=$dayf/main.c
 
-./grabinput.sh $day
+if [ ! -f "$main" ]; then
+    mkdir -p $dayf
+    ./grabinput.sh $day
 
+    echo "#include <stdio.h>" > $main
+    echo "#include <stdlib.h>" >> $main
+    echo "#include <sys/types.h>" >> $main
+    echo "#define _GNU_SOURCE 1" >> $main
+    echo "" >> $main
+    echo "int main() {" >> $main
+    echo "    FILE *f = fopen(\"input.txt\", \"r\");" >> $main
+    echo "}" >> $main
+else
+    echo "main.c already exists. to avoid deleting source code, setup will abort"
+    exit 1
+fi
