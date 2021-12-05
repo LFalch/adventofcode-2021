@@ -47,7 +47,9 @@ int main() {
                 grid[x][y1] += 1;
                 if (grid[x][y1] == 2) points_quick++;
             }
-        } else {
+        }
+        #ifdef PART2
+        else {
             if (x1 > x2) {
                 int temp = x1, temp2 = y1;
                 x1 = x2;
@@ -66,6 +68,7 @@ int main() {
                 x++; y += dy;
             }
         }
+        #endif
     }
     printf("%u\n", points_quick);
 }
