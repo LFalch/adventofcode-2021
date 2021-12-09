@@ -50,7 +50,7 @@ fn main() {
     while f.read_line(&mut buf).unwrap_or(0) > 0 {
         let line = buf.trim();
         line_length = line.len();
-        points.extend(line[..line.len()-1].as_bytes().iter().map(|&c| c - b'0'));
+        points.extend(line.as_bytes().iter().map(|&c| c - b'0'));
         buf.clear();
     }
 
