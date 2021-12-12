@@ -4,9 +4,13 @@ use std::{
     collections::{HashMap, HashSet},
 };
 
-fn path1(cur: &str, connections: &HashMap<String, HashSet<String>>, visited: HashSet<String>, n: &mut u64) {
+fn path(cur: &str, connections: &HashMap<String, HashSet<String>>, visited: HashSet<String>, double_small_visit: bool, n: &mut u64, n2: &mut u64) {
     if cur == "end" {
-        *n += 1;
+        if double_small_visit {
+            *n2 += 1;
+        } else {
+            *n += 1;
+        }
         return
     }
 
@@ -17,30 +21,13 @@ fn path1(cur: &str, connections: &HashMap<String, HashSet<String>>, visited: Has
         if connection.chars().all(|c| c.is_lowercase()) {
             visited.insert(connection.clone());
         }
-        path1(&connection, connections, visited, n);
-    }
-}
-
-fn path2(cur: &str, connections: &HashMap<String, HashSet<String>>, visited: HashSet<String>, double_small_visit: bool, n: &mut u64) {
-    if cur == "end" {
-        *n += 1;
-        return
-    }
-
-    let cs = connections[cur].difference(&visited).cloned().collect::<Vec<_>>();
-
-    for connection in cs {
-        let mut visited = visited.clone();
-        if connection.chars().all(|c| c.is_lowercase()) {
-            visited.insert(connection.clone());
-        }
-        path2(&connection, connections, visited, double_small_visit, n);
+        path(&connection, connections, visited, double_small_visit, n, n2);
     }
     if !double_small_visit {
         let cs = connections[cur].intersection(&visited).filter(|s| &***s != "start").cloned().collect::<Vec<_>>();
 
         for connection in cs.into_iter() {
-            path2(&connection, connections, visited.clone(), true, n);
+            path(&connection, connections, visited.clone(), true, n, n2);
         }
     }
 }
@@ -61,9 +48,8 @@ fn main() {
     }
 
     let mut n = 0;
-    path1("start", &connections, HashSet::from_iter(vec!["start".to_string()]), &mut n);
+    let mut n2 = 0;
+    path("start", &connections, HashSet::from_iter(vec!["start".to_string()]), false, &mut n, &mut n2);
     println!("{}", n);
-    n = 0;
-    path2("start", &connections, HashSet::from_iter(vec!["start".to_string()]), false, &mut n);
-    println!("{}", n);
+    println!("{}", n+n2);
 }
