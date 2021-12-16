@@ -1,5 +1,6 @@
 use std::fs::File;
 use std::io::{BufReader, Read};
+use std::fmt::{self, Display};
 
 struct BitStream<I> {
     inner: I,
@@ -75,6 +76,76 @@ fn nbit<R>(bs: &mut BitStream<R>, n: u8) -> u16 where BitStream<R>: Iterator<Ite
 struct Packet {
     version: u8,
     body: PacketBody
+}
+
+impl Display for Packet {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self.body {
+            PacketBody::Literal(n) => n.fmt(f)?,
+            PacketBody::Operator(id, ref ops) => {
+                match id {
+                    0 => {
+                        let mut iter = ops.iter();
+                        write!(f, "(")?;
+                        let last = iter.next_back().unwrap();
+                        for p in iter {
+                            p.fmt(f)?;
+                            write!(f, " + ")?;
+                        }
+                        last.fmt(f)?;
+                        write!(f, ")")?;
+                    }
+                    1 => {
+                        let mut iter = ops.iter();
+                        write!(f, "(")?;
+                        let last = iter.next_back().unwrap();
+                        for p in iter {
+                            p.fmt(f)?;
+                            write!(f, " * ")?;
+                        }
+                        last.fmt(f)?;
+                        write!(f, ")")?;
+                    }
+                    2 => {
+                        write!(f, "min(")?;
+                        let last_i = ops.len()-1;
+                        for (i, p) in ops.iter().enumerate() {
+                            p.fmt(f)?;
+                            write!(f, "{}", if i == last_i {""} else { ", " })?;
+                        }
+                        write!(f, ")")?;
+                    }
+                    3 => {
+                        write!(f, "max(")?;
+                        let last_i = ops.len()-1;
+                        for (i, p) in ops.iter().enumerate() {
+                            p.fmt(f)?;
+                            write!(f, "{}", if i == last_i {""} else { ", " })?;
+                        }
+                        write!(f, ")")?;
+                    }
+                    5..=7 => {
+                        let op = match id {
+                            5 => ">",
+                            6 => "<",
+                            7 => "==",
+                            _ => unreachable!(),
+                        };
+                        write!(f, "(")?;
+                        ops[0].fmt(f)?;
+                        write!(f, " {} ", op)?;
+                        ops[1].fmt(f)?;
+                        write!(f, ")")?;
+                    }
+                    _ => f.debug_list().entries(ops.iter()).finish()?,
+                }
+            }
+        }
+        if f.alternate() {
+            write!(f, "v{}", self.version)?;
+        }
+        Ok(())
+    }
 }
 
 #[derive(Debug, Clone)]
@@ -171,11 +242,12 @@ fn main() {
     let f = BufReader::new(File::open("input.txt").unwrap());
 
     let packet = parse_packet(&mut BitStream::new(f));
-    println!("{:?}", &packet);
-
+    eprintln!("{:#}", &packet);
+    
     let vs = version_sum(&packet);
-
+    
     println!("{}", vs);
-
+    
+    eprintln!("{} =", &packet);
     println!("{}", evaluate(&packet));
 }
