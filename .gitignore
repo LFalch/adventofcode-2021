@@ -4,3 +4,4 @@ input.txt
 *.o
 leaderboard/target
 leaderboard/test.json
+target
