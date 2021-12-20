@@ -1,6 +1,6 @@
 use std::fs::File;
 use std::io::{BufReader, BufRead};
-use std::collections::{HashSet, BTreeSet};
+use std::collections::HashSet;
 use std::ops::{Add, Sub};
 
 impl Add for Position {
