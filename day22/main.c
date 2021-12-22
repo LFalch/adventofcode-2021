@@ -13,12 +13,12 @@
 static void part1() {
     FILE *f = fopen("input.txt", "r");
 
-    int cubes[101][101][101] = {0};
+    char cubes[101][101][101] = {0};
     char onoff[4];
     int xmin, xmax, ymin, ymax, zmin, zmax;
 
     while (fscanf(f, "%s x=%d..%d,y=%d..%d,z=%d..%d\n", onoff, &xmin, &xmax, &ymin, &ymax, &zmin, &zmax) == 7) {
-        int on = strcmp("on", onoff) == 0;
+        char on = strcmp("on", onoff) == 0;
         if (!on) assert(strcmp("off", onoff) == 0);
         if (xmin >= -50 && xmax <= 50 && ymin >= -50 && ymax <= 50 && zmin >= -50 && zmax <= 50) {
             for (size_t i = xmin+50L; i <= xmax+50L; i++) {
@@ -30,6 +30,7 @@ static void part1() {
             }
         }
     }
+    fclose(f);
 
     size_t count = 0;
 
@@ -143,6 +144,7 @@ static void part2() {
 
         ++cubes_n;
     }
+    fclose(f);
 
     size_t count = 0;
 
